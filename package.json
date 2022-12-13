@@ -1,10 +1,11 @@
 {
     "name": "@zhennann/fisco-bcos",
-    "version": "2.9.1",
+    "version": "2.9.2",
     "description": "Node.js sdk for FISCO BCOS",
     "keywords": [
         "FISCO BCOS"
     ],
+    "main": "./packages/api/index.js",
     "homepage": "https://github.com/FISCO-BCOS/nodejs-sdk",
     "bugs": "https://github.com/FISCO-BCOS/nodejs-sdk/issues",
     "authors": {
@@ -23,9 +24,9 @@
         "npm": ">=5.6.0"
     },
     "scripts": {
-        "_postinstall": "npm run bootstrap",
-        "_repoclean": "lerna clean && npm run clean-solc-0.4 && npm run clean-solc-0.5",
-        "_bootstrap": "lerna bootstrap && npm run install-solc-0.4 && npm run install-solc-0.5",
+        "postinstall": "npm run bootstrap",
+        "repoclean": "npm run clean-solc-0.4 && npm run clean-solc-0.5",
+        "bootstrap": "npm run install-solc-0.4 && npm run install-solc-0.5",
         "install-solc-0.4": "cd ./packages/api/compile/compilers/solc-0.4 && npm install",
         "install-solc-0.5": "cd ./packages/api/compile/compilers/solc-0.5 && npm install",
         "clean-solc-0.4": "rm -rf ./packages/api/compile/compilers/solc-0.4/node_modules",
