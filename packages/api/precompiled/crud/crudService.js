@@ -70,7 +70,9 @@ class CRUDService extends ServiceBase {
             receipt = await this.web3jService.sendRawTransaction(address, abi, parameters);
         }
 
-        return handleReceipt(receipt, abi)[0];
+        const output = handleReceipt(receipt, abi)[0];
+        
+        return { output, receipt };
     }
 
     async createTable(table) {
@@ -112,12 +114,13 @@ class CRUDService extends ServiceBase {
         }
 
         let parameters = [table.tableName, table.key, collection.join(',')];
-        let output = await this._send(constant.TABLE_FACTORY_PRECOMPILE_ABI.createTable, parameters, false, constant.TABLE_FACTORY_PRECOMPILE_ADDRESS);
-        let status = parseInt(output);
+        const res = await this._send(constant.TABLE_FACTORY_PRECOMPILE_ABI.createTable, parameters, false, constant.TABLE_FACTORY_PRECOMPILE_ADDRESS);
+        let status = parseInt(res.output);
         if (status === 0) {
             return {
                 code: OutputCode.Success,
-                msg: OutputCode.getOutputMessage(OutputCode.Success)
+                msg: OutputCode.getOutputMessage(OutputCode.Success),
+                receipt: res.receipt,
             };
         } else {
             return {
@@ -132,14 +135,15 @@ class CRUDService extends ServiceBase {
         this._checkTableKeyLength(table);
 
         let parameters = [table.tableName, table.key, JSON.stringify(entry.fields), table.optional];
-        let output = await this._send(constant.CRUD_PRECOMPILE_ABI.insert, parameters);
+        const res = await this._send(constant.CRUD_PRECOMPILE_ABI.insert, parameters);
 
-        let status = parseInt(output);
+        let status = parseInt(res.output);
         if (status > 0) {
             return {
                 code: OutputCode.Success,
                 msg: OutputCode.getOutputMessage(OutputCode.Success),
-                affected: status
+                affected: status,
+                receipt: res.receipt,
             };
         } else {
             return {
@@ -154,14 +158,15 @@ class CRUDService extends ServiceBase {
         this._checkTableKeyLength(table);
 
         let parameters = [table.tableName, table.key, JSON.stringify(entry.fields), JSON.stringify(condition.conditions), table.optional];
-        let output = await this._send(constant.CRUD_PRECOMPILE_ABI.update, parameters);
+        const res = await this._send(constant.CRUD_PRECOMPILE_ABI.update, parameters);
 
-        let status = parseInt(output);
+        let status = parseInt(res.output);
         if (status >= 0) {
             return {
                 code: OutputCode.Success,
                 msg: OutputCode.getOutputMessage(OutputCode.Success),
-                affected: status
+                affected: status,
+                receipt: res.receipt,
             };
         } else {
             return {
@@ -176,9 +181,9 @@ class CRUDService extends ServiceBase {
         this._checkTableKeyLength(table);
 
         let parameters = [table.tableName, table.key, JSON.stringify(condition.conditions), table.optional];
-        let output = await this._send(constant.CRUD_PRECOMPILE_ABI.select, parameters, true);
+        const res = await this._send(constant.CRUD_PRECOMPILE_ABI.select, parameters, true);
 
-        return JSON.parse(output);
+        return JSON.parse(res.output);
     }
 
     async remove(table, condition) {
@@ -186,14 +191,15 @@ class CRUDService extends ServiceBase {
         this._checkTableKeyLength(table);
 
         let parameters = [table.tableName, table.key, JSON.stringify(condition.conditions), table.optional];
-        let output = await this._send(constant.CRUD_PRECOMPILE_ABI.remove, parameters);
+        const res = await this._send(constant.CRUD_PRECOMPILE_ABI.remove, parameters);
 
-        let status = parseInt(output);
+        let status = parseInt(res.output);
         if (status >= 0) {
             return {
                 code: OutputCode.Success,
                 msg: OutputCode.getOutputMessage(OutputCode.Success),
-                affected: status
+                affected: status,
+                receipt: res.receipt,
             };
         } else {
             return {
