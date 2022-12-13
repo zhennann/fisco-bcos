@@ -1,0 +1,10 @@
+.ci/
+test/
+node_modules/
+.vscode/
+package-lock.json
+.output/
+*.crt
+*.key
+*.swp
+*.publickey
